@@ -1,3 +1,15 @@
+
+// babylon voxel custom colors
+function colorize(id) {
+  return [
+    (id >> 16) & 255,
+    (id >>  8) & 255,
+     id        & 255
+  ];
+}
+
+
+
 class AVoxel {
 
   constructor (size) {
@@ -133,10 +145,40 @@ class AVoxel {
     }
   }
 
+  traverse (fn) {
+    const ws = this.size;
+    let x, y, z;
+    for (z = 0; z < ws; ++z) {
+      for (y = 0; y < ws; ++y) {
+        for (x = 0; x < ws; ++x) {
+          const block = this.get(x, y, z);
+          if (block) {
+            fn(x, y, z, block);
+          }
+        }
+      }
+    }
+  }
+
+  toBabylon (id, scene) {
+    const SZ = this.size;
+    const vox = new CEWBS.VoxelMesh(id, scene);
+    vox.setDimensions([SZ, SZ, SZ]);
+    this.traverse((x, y, z, c) => {
+      vox.setVoxelAt([x, y, z], c);
+    });
+    vox.position.x -= SZ/2;
+    vox.position.y -= SZ/2;
+    vox.position.z -= SZ/2;
+    vox.coloringFunction = colorize;
+    vox.updateMesh();
+    return vox;
+  }
+
   emptyClone () {
     return new AVoxel(this.size);
   }
 
 };
 
-module.exports = AVoxel;
+//module.exports = AVoxel;
