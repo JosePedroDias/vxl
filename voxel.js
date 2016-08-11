@@ -15,15 +15,17 @@ window.addEventListener('resize', function() {
 
 
 function createScene() {
-  const SZ = 128;
+  const SZ = 256;
 
   const scene = new BABYLON.Scene(engine);
 
-  const cam = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, SZ*2, -SZ*4), scene);
+  //const cam = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, SZ*2, -SZ*4), scene);
+  const cam = new BABYLON.ArcRotateCamera('camera1', 1, 0.8, SZ*1.2, new BABYLON.Vector3(0, 0, 0), scene);
   cam.setTarget(BABYLON.Vector3.Zero());
   cam.attachControl(canvas, true);
 
-  const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
+  //const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
+  const light = new BABYLON.DirectionalLight('light', new BABYLON.Vector3(-1, -1, -1), scene);
 
   //const sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 2, scene);
   //sphere.position.y = 1;
@@ -38,6 +40,7 @@ function createScene() {
 
 
 
+  /*
   console.time('voxel ops');
     let av = new AVoxel(SZ);
     //av.add(0, 0, 0, 0xFF0000);
@@ -92,6 +95,35 @@ function createScene() {
   console.time('voxel meshing');
     const vox = av.toBabylon('vox', scene);
   console.timeEnd('voxel meshing');
+  */
+
+
+
+
+  loadSrtmTile('funchal.png', function(o) { // funchal lisboa lagos
+    console.time('voxel ops');
+      let av = new AVoxel(SZ);
+      let x, y, z;
+      for (y = 0; y < SZ; ++y) {
+        for (x = 0; x < SZ; ++x) {
+          let v = o.get(x, y);
+          v = Math.round( v / 30 );
+          for (z = 0; z < v; ++z) {
+            av.add(x, z, y, 0x00FF00);
+          }
+        }
+      }
+    console.timeEnd('voxel ops');
+
+    console.time('voxel meshing');
+      const vox = av.toBabylon('vox', scene);
+    console.timeEnd('voxel meshing');
+
+    vox.receiveShadows = true;
+    var shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
+    shadowGenerator.getShadowMap().renderList.push(vox);
+    shadowGenerator.bias = 0.00001;
+  });
 
   return scene;
 };
