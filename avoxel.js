@@ -87,7 +87,7 @@ class AVoxel {
     return dst;
   }
 
-  subtract (v) { // removes this from v
+  subtract (v) { // removes this from v TODO CHECK
     const ws = this.size;
     const wsV = v.size;
     let x, y, z, dx, dy, dz;
@@ -108,7 +108,7 @@ class AVoxel {
     return v;
   }
 
-  intersect (dst) { // keeps only in v where both are set
+  intersect (dst) { // keeps only in v where both are set TODO CHECK
     const ws = this.size;
     const wsV = v.size;
     let x, y, z, dx, dy, dz;
@@ -131,6 +131,26 @@ class AVoxel {
       }
     }
     return v;
+  }
+
+  simplify (dst) {
+    if (!dst) { dst = new AVoxel(this.size/2); }
+
+    const ws = this.size;
+    let x, y, z;
+    for (z = 0; z < ws; ++z) {
+      if (z % 2) { continue; }
+      for (y = 0; y < ws; ++y) {
+        if (y % 2) { continue; }
+        for (x = 0; x < ws; ++x) {
+          if (x % 2) { continue; }
+          const clr = this.get(x, y, z);
+          dst.add(x/2, y/2, z/2, clr);
+        }
+      }
+    }
+
+    return dst;
   }
 
   paint (fn) {

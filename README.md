@@ -7,10 +7,10 @@ OSM vector data, bitmapped and extruded.
 
 ## TODO
 
+* test LOD voxels
+* compute height scale correctly
 * export avoxel to qbl test (sphere)
 * import qbl file to avoxel (must be WxWxW sized)
-* voxel simplification with nearest neighbour, test LOD
-* generate voxel from SRTM height texture
 * import OSM geometry, raster and extrude
 
 

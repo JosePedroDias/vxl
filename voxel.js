@@ -20,21 +20,22 @@ function createScene() {
   const scene = new BABYLON.Scene(engine);
 
   //const cam = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, SZ*2, -SZ*4), scene);
-  const cam = new BABYLON.ArcRotateCamera('camera1', 1, 0.8, SZ*1.2, new BABYLON.Vector3(0, 0, 0), scene);
+  const cam = new BABYLON.ArcRotateCamera('camera1', 1, 0.8, SZ*1.2, new BABYLON.Vector3(0, 0 - SZ/2, 0), scene);
   cam.setTarget(BABYLON.Vector3.Zero());
   cam.attachControl(canvas, true);
 
-  //const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
-  const light = new BABYLON.DirectionalLight('light', new BABYLON.Vector3(-1, -1, -1), scene);
+  //const hLight = new BABYLON.HemisphericLight('hLight', new BABYLON.Vector3(0, 1, 0), scene);
+  const dLight = new BABYLON.DirectionalLight('dLight', new BABYLON.Vector3(0.4, -0.8, 0.2), scene);
 
   //const sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 2, scene);
   //sphere.position.y = 1;
 
-  /*const cube = BABYLON.Mesh.CreateBox('box1', SZ, scene);
+  const cube = BABYLON.Mesh.CreateBox('box1', SZ, scene);
+  cube.position.y += SZ/2;
   cube.material = new BABYLON.StandardMaterial('mat1', scene);
   cube.material.wireframe = true;
   cube.material.alpha = 0.5;
-  cube.material.emissiveColor = new BABYLON.Color3(1, 1, 1);*/
+  cube.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
 
   //const ground = BABYLON.Mesh.CreateGround('ground1', 6, 6, 2, scene);
 
@@ -99,6 +100,15 @@ function createScene() {
 
 
 
+  function hex2rgb(hex) {
+    return [
+      (hex >> 16) & 255,
+      (hex >>  8) & 255,
+       hex        & 255
+    ];
+  }
+
+
 
   loadSrtmTile('funchal.png', function(o) { // funchal lisboa lagos
     console.time('voxel ops');
@@ -109,20 +119,28 @@ function createScene() {
           let v = o.get(x, y);
           v = Math.round( v / 30 );
           for (z = 0; z < v; ++z) {
-            av.add(x, z, y, 0x00FF00);
+            av.add(SZ - 1 - x, z, y, rgb2hex(64 + v*3, 255, 64 + v*3)); // TODO Weird coord mapping?
           }
         }
       }
     console.timeEnd('voxel ops');
 
+    //av = av.simplify();
+    //av = av.simplify();
+    //av = av.simplify();
+
     console.time('voxel meshing');
       const vox = av.toBabylon('vox', scene);
+      vox.position.y += SZ/2;
     console.timeEnd('voxel meshing');
 
-    vox.receiveShadows = true;
-    var shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
-    shadowGenerator.getShadowMap().renderList.push(vox);
-    shadowGenerator.bias = 0.00001;
+    if (true) {
+      vox.receiveShadows = true;
+      const shadowGenerator = new BABYLON.ShadowGenerator(1024, dLight);
+      shadowGenerator.getShadowMap().renderList.push(vox);
+      shadowGenerator.usePoissonSampling = true;
+      // shadowGenerator.bias = 0.00001;
+    }
   });
 
   return scene;
