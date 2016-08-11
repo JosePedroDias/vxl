@@ -15,7 +15,7 @@ window.addEventListener('resize', function() {
 
 
 function createScene() {
-  const SZ = 64;
+  const SZ = 128;
 
   const scene = new BABYLON.Scene(engine);
 
@@ -28,15 +28,14 @@ function createScene() {
   //const sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 2, scene);
   //sphere.position.y = 1;
 
-  const cube = BABYLON.Mesh.CreateBox('box1', SZ, scene);
+  /*const cube = BABYLON.Mesh.CreateBox('box1', SZ, scene);
   cube.material = new BABYLON.StandardMaterial('mat1', scene);
   cube.material.wireframe = true;
   cube.material.alpha = 0.5;
-  //cube.material.ambientColor = new BABYLON.Color3(1, 1, 1);
-  cube.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
-
+  cube.material.emissiveColor = new BABYLON.Color3(1, 1, 1);*/
 
   //const ground = BABYLON.Mesh.CreateGround('ground1', 6, 6, 2, scene);
+
 
 
   console.time('voxel ops');
@@ -84,10 +83,10 @@ function createScene() {
     }
 
     function gradientY64(x, y, z) {
-      return [0.2, y/63, 0.2];
+      return [32, y/SZ*255, 32];
     }
 
-    av.paint(checkered8); // dash4y checkered8 gradientY64
+    av.paint(checkered8); // dash4y checkered8 gradientY64 mult(checkered8, gradientY64)
   console.timeEnd('voxel paint');
 
   console.time('voxel meshing');
