@@ -1,11 +1,15 @@
 
 // babylon voxel custom colors
-function colorize(id) {
+function hex2rgb(hex) {
   return [
-    (id >> 16) & 255,
-    (id >>  8) & 255,
-     id        & 255
+    (hex >> 16) & 255,
+    (hex >>  8) & 255,
+     hex        & 255
   ];
+}
+
+function rgb2hex(r, g, b) {
+  return ((r << 16) + (g << 8) + b);
 }
 
 
@@ -78,7 +82,7 @@ class AVoxel {
     for (let i = 0; i < this.xyz; ++i) {
       const v = this.data[i];
       const V = (v === 0) ? 0xFFFFFF : 0;
-      this.data[i] = V;
+      dst.data[i] = V;
     }
     return dst;
   }
@@ -138,7 +142,7 @@ class AVoxel {
           const block = this.get(x, y, z);
           if (block) {
             const c = fn(x, y, z);
-            this.add(x, y, z, c);
+            this.add(x, y, z, rgb2hex(c[0], c[1], c[2]));
           }
         }
       }
@@ -170,7 +174,7 @@ class AVoxel {
     vox.position.x -= SZ/2;
     vox.position.y -= SZ/2;
     vox.position.z -= SZ/2;
-    vox.coloringFunction = colorize;
+    vox.coloringFunction = hex2rgb;
     vox.updateMesh();
     return vox;
   }

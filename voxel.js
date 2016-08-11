@@ -14,18 +14,8 @@ window.addEventListener('resize', function() {
 
 
 
-function colorize(id) {
-  return [
-    (id >> 16) & 255,
-    (id >>  8) & 255,
-     id        & 255
-  ];
-}
-
-
-
 function createScene() {
-  const SZ = 32;
+  const SZ = 64;
 
   const scene = new BABYLON.Scene(engine);
 
@@ -49,25 +39,60 @@ function createScene() {
   //const ground = BABYLON.Mesh.CreateGround('ground1', 6, 6, 2, scene);
 
 
+  console.time('voxel ops');
+    let av = new AVoxel(SZ);
+    //av.add(0, 0, 0, 0xFF0000);
+    //av.add(2, 2, 2, 0x00FF00);
 
-  const av = new AVoxel(SZ);
-  //av.add(0, 0, 0, 0xFF0000);
-  //av.add(2, 2, 2, 0x00FF00);
-  //av.addSphere(16, 16, 16, 15, 0xFF0000);
-  av.addBox(0, 0, 0, 15, 31, 31, 0x00FF00);
-  const vox = av.toBabylon('vox', scene);
+    av.addSphere(SZ/2, SZ/2, SZ/2, SZ*0.6, 0xFF0000);
+    av = av.inverted();
 
-  /*const vox2 = new CEWBS.VoxelMesh('vox2', scene);
-  vox2.setDimensions([SZ, SZ, SZ]);
-  av.traverse((x, y, z, c) => {
-    vox2.setVoxelAt([x, y, z], c);
-  });
-  vox2.position.x -= SZ/2;
-  vox2.position.y -= SZ/2;
-  vox2.position.z -= SZ/2;
-  vox2.coloringFunction = colorize;
-  vox2.updateMesh();*/
+    //av.addBox(0, 0, 0, 15, 31, 31, 0x00FF00);
+  console.timeEnd('voxel ops');
 
+  console.time('voxel paint');
+    const RED   = [255, 0, 0];
+    const GREEN = [0, 255, 0];
+
+    function mult(fn1, fn2) {
+      return function(x, y, z) {
+        const a = fn1(x, y, z);
+        const b = fn2(x, y, z);
+        return [
+          a[0] * b[0],
+          a[1] * b[1],
+          a[2] * b[2]
+        ];
+      }
+    }
+
+    function dashN(i, n) {
+      return ((i % n) < n/2);
+    }
+
+
+    // fns
+    function dash4y(x, y, z) {
+      return dashN(y, 8) ? RED : GREEN;
+    }
+
+    function checkered8(x, y, z) {
+      let on = dashN(x, 16);
+      on ^= dashN(y, 16);
+      on ^= dashN(z, 16);
+      return on ? RED : GREEN;
+    }
+
+    function gradientY64(x, y, z) {
+      return [0.2, y/63, 0.2];
+    }
+
+    av.paint(checkered8); // dash4y checkered8 gradientY64
+  console.timeEnd('voxel paint');
+
+  console.time('voxel meshing');
+    const vox = av.toBabylon('vox', scene);
+  console.timeEnd('voxel meshing');
 
   return scene;
 };
