@@ -184,18 +184,39 @@ class AVoxel {
     }
   }
 
-  toBabylon (id, scene) {
+  toBabylon (id, scene, scale) {
     const SZ = this.size;
     const vox = new CEWBS.VoxelMesh(id, scene);
     vox.setDimensions([SZ, SZ, SZ]);
     this.traverse((x, y, z, c) => {
       vox.setVoxelAt([x, y, z], c);
     });
-    vox.position.x -= SZ/2;
-    vox.position.y -= SZ/2;
-    vox.position.z -= SZ/2;
+
     vox.coloringFunction = hex2rgb;
     vox.updateMesh();
+
+    vox.updateMeshPositions(function(positions) {
+      positions.forEach(function(p, i) {
+        const ii = i % 3;
+        const v = positions[i];
+        if (ii === 1) {
+          positions[i] = v * scale;
+        }
+        else {
+          positions[i] = (v - SZ/2) * scale;
+        }
+
+      });
+    }, false);
+
+    /*vox.position.x -= SZ/2/scale;
+    vox.position.y -= SZ/2/scale;
+    vox.position.z -= SZ/2/scale;
+
+    vox.scale.x *= scale;
+    vox.scale.y *= scale;
+    vox.scale.z *= scale;*/
+
     return vox;
   }
 

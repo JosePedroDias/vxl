@@ -17,5 +17,6 @@ OSM vector data, bitmapped and extruded.
 ## Reference
 
 * <http://doc.babylonjs.com/>
+* <https://doc.babylonjs.com/tutorials/How_to_use_LOD>
 * <https://github.com/TriBlade9/CEWBS>
 * <http://minddesk.com/learn/article.php?id=22>

@@ -26,6 +26,8 @@ function createScene() {
 
   //const hLight = new BABYLON.HemisphericLight('hLight', new BABYLON.Vector3(0, 1, 0), scene);
   const dLight = new BABYLON.DirectionalLight('dLight', new BABYLON.Vector3(0.4, -0.8, 0.2), scene);
+  const dLight2 = new BABYLON.DirectionalLight('dLight2', new BABYLON.Vector3(-0.6, -0.7, -0.3), scene);
+  dLight2.intensity = 0.3;
 
   //const sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 2, scene);
   //sphere.position.y = 1;
@@ -125,21 +127,25 @@ function createScene() {
       }
     console.timeEnd('voxel ops');
 
-    //av = av.simplify();
-    //av = av.simplify();
-    //av = av.simplify();
-
     console.time('voxel meshing');
-      const vox = av.toBabylon('vox', scene);
-      vox.position.y += SZ/2;
+      const vox = av.toBabylon('vox', scene, 1);
     console.timeEnd('voxel meshing');
+
+    console.time('voxel LODs');
+      const av2 = av.simplify();
+      const vox2 = av2.toBabylon('vox2', scene, 2);
+      vox.addLODLevel(200, vox2);
+
+      const av3 = av2.simplify();
+      const vox3 = av3.toBabylon('vox3', scene, 4);
+      vox.addLODLevel(400, vox3);
+    console.timeEnd('voxel LODs');
 
     if (true) {
       vox.receiveShadows = true;
       const shadowGenerator = new BABYLON.ShadowGenerator(1024, dLight);
       shadowGenerator.getShadowMap().renderList.push(vox);
       shadowGenerator.usePoissonSampling = true;
-      // shadowGenerator.bias = 0.00001;
     }
   });
 
