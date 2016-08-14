@@ -4,6 +4,7 @@
 
 function loadSrtmTile(url, cb) {
   const imgEl = document.createElement('img');
+  imgEl.crossOrigin = 'Anonymous'; // only works for * CORS
   imgEl.src = url;
   document.body.appendChild(imgEl);
 

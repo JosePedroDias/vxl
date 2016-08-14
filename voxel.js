@@ -44,20 +44,24 @@ function createScene() {
 
 
   function voxelFromSRTM(srtmPath, pos, cb) {
+    const clock = false;
+
     loadSrtmTile(srtmPath, function(srtm) { // funchal lisboa lagos
       console.log('preparing voxel for %s...', srtmPath);
 
-      console.time('voxel ops');
+      if (clock) console.time('voxel ops');
         const av = paintSrtm(srtm);
-      console.timeEnd('voxel ops');
+      if (clock) console.timeEnd('voxel ops');
 
-      console.time('voxel meshing');
+      if (clock) console.time('voxel meshing');
         const vox = av.toBabylon(scene, [400, 800]);
-      console.timeEnd('voxel meshing');
+      if (clock) console.timeEnd('voxel meshing');
 
       vox.position.x = pos[0];
       vox.position.y = pos[1];
       vox.position.z = pos[2];
+
+      console.warn('voxel %s ready', srtmPath);
 
       if (cb) {
         cb(vox);
@@ -84,9 +88,25 @@ function createScene() {
 
 
 
-  voxelFromSRTM('funchal.png', [-256, 0, 0]);
-  voxelFromSRTM('lisboa.png',  [   0, 0, 0]);
-  voxelFromSRTM('lagos.png',   [ 256, 0, 0]);
+  const x0 = 486;
+  const y0 = 626;
+  const dx = 3;
+  const dy = 2;
+
+  let x, y;
+  for (y = 0; y < dy; ++y) {
+    for (x = 0; x < dx; ++x) {
+      const url = `http://127.0.0.1:9999/10/${x0+x}/${y0-y}.png`;
+      const pos = [SZ*(-x+dx/2-0.5), 0, SZ*(y-dy/2+0.5)];
+      //console.log(url, pos);
+      voxelFromSRTM(url, pos);
+    }
+  }
+
+
+  //voxelFromSRTM('funchal.png', [-256, 0, 0]);
+  //voxelFromSRTM('lisboa.png',  [   0, 0, 0]);
+  //voxelFromSRTM('lagos.png',   [ 256, 0, 0]);
 
 
 

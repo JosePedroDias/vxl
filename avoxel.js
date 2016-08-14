@@ -217,6 +217,9 @@ class AVoxel {
       });
     }, false);
 
+    vox.refreshBoundingInfo();
+    vox.showBoundingBox = true; // TODO DEBUG
+
     return vox;
   }
 
