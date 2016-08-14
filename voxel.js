@@ -28,8 +28,8 @@ function createScene() {
 
   //const hLight = new BABYLON.HemisphericLight('hLight', new BABYLON.Vector3(0, 1, 0), scene);
   const dLight = new BABYLON.DirectionalLight('dLight', new BABYLON.Vector3(0.4, -0.8, 0.2), scene);
-  //const dLight2 = new BABYLON.DirectionalLight('dLight2', new BABYLON.Vector3(-0.6, -0.7, -0.3), scene);
-  //dLight2.intensity = 0.3;
+  const dLight2 = new BABYLON.DirectionalLight('dLight2', new BABYLON.Vector3(-0.6, -0.7, -0.3), scene);
+  dLight2.intensity = 0.3;
 
   //const sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 2, scene);
   //sphere.position.y = 1;
@@ -45,12 +45,18 @@ function createScene() {
 
 
 
-  //const LOD_DISTS = [400, 800];
-  const LOD_DISTS = []; // disables LOD
+  const LOD_DISTS = [400, 800];
+  //const LOD_DISTS = []; // disables LOD
 
+  let totalJobs = 0;
+  let finishedJobs = 0;
+  
+  document.title = '0%';
 
   function voxelFromSRTM(srtmPath, pos, cb) {
     const clock = false;
+
+    ++totalJobs;
 
     loadSrtmTile(srtmPath, function(srtm) { // funchal lisboa lagos
       console.log('preparing voxel for %s...', srtmPath);
@@ -80,6 +86,10 @@ function createScene() {
 
       console.warn('voxel %s ready', srtmPath);
 
+      ++finishedJobs;
+
+      document.title = `${ ~~(finishedJobs/totalJobs * 100) }%`;
+
       if (cb) {
         cb(vox);
       }
@@ -95,8 +105,11 @@ function createScene() {
       for (x = 0; x < SZ; ++x) {
         let v = srtm.get(x, y);
         v = Math.round( v / 30 );
+        if (v > SZ) { throw `v too high ${v} at ${x},${y}`; }
+        const v2 = Math.min(v*6, 255);
+        const v3 = Math.min(64 + v2*2, 255);
         for (z = 0; z < v; ++z) {
-          av.add(SZ - 1 - x, z, y, rgb2hex(64 + v*3, 255, 64 + v*3)); // TODO Weird coord mapping?
+          av.add(SZ - 1 - x, z, y, rgb2hex(v2, v3, v2)); // TODO Weird coord mapping?
         }
       }
     }
@@ -108,8 +121,8 @@ function createScene() {
   let x0, y0, dx, dy;
   //x0=486; y0=626; dx=3; dy=2; // sagres
   //x0=485; y0=632; dx=3; dy=3; // lisboa
-  //x0=462; y0=610; dx=3; dy=2; // funchal
-  x0=488; y0=636; dx=3; dy=3; // serra da estrela
+  x0=462; y0=610; dx=3; dy=2; // funchal
+  //x0=488; y0=636; dx=3; dy=3; // serra da estrela
 
   let x, y;
   for (y = 0; y < dy; ++y) {

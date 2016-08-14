@@ -7,6 +7,7 @@ OSM vector data, bitmapped and extruded.
 
 ## TODO
 
+* divide heightmap into 4, compute those
 * compute height scale correctly
 * export avoxel to qbl test (sphere)
 * import qbl file to avoxel (must be WxWxW sized)

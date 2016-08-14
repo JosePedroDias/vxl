@@ -257,6 +257,10 @@ class AVoxel {
     vox.refreshBoundingInfo();
     vox.showBoundingBox = true; // TODO DEBUG
 
+    //if (vox.material) {
+    //  vox.material.emissiveColor = BABYLON.Color3(0.33, 0.33, 0.33);
+    //}
+
     return vox;
   }
 
