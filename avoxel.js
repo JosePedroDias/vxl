@@ -12,6 +12,14 @@ function rgb2hex(r, g, b) {
   return ((r << 16) + (g << 8) + b);
 }
 
+function rndId() {
+  return ( ~~( Math.random() * Math.pow(2, 24) ) ).toString(32);
+}
+
+function clone(o) {
+  return JSON.parse( JSON.stringify(o) );
+}
+
 
 
 class AVoxel {
@@ -184,7 +192,7 @@ class AVoxel {
     }
   }
 
-  toBabylon (id, scene, scale) {
+  _toBabylon (id, scene, scale) {
     const SZ = this.size;
     const vox = new CEWBS.VoxelMesh(id, scene);
     vox.setDimensions([SZ, SZ, SZ]);
@@ -209,15 +217,29 @@ class AVoxel {
       });
     }, false);
 
-    /*vox.position.x -= SZ/2/scale;
-    vox.position.y -= SZ/2/scale;
-    vox.position.z -= SZ/2/scale;
-
-    vox.scale.x *= scale;
-    vox.scale.y *= scale;
-    vox.scale.z *= scale;*/
-
     return vox;
+  }
+
+  toBabylon(scene, lodDists) {
+    lodDists = clone(lodDists);
+
+    let scale = 1;
+    let firstVox, lastVox;
+    let lastAv = this;
+    const id = rndId();
+
+    firstVox = lastAv._toBabylon(id, scene, scale);
+    lastVox = firstVox;
+
+    let dist;
+    while (dist = lodDists.shift()) {
+      scale *= 2;
+      lastAv = lastAv.simplify();
+      lastVox = lastAv._toBabylon([id, scale].join('_'), scene, scale);
+      firstVox.addLODLevel(dist, lastVox);
+    }
+
+    return firstVox;
   }
 
   emptyClone () {
