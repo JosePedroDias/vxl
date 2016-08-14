@@ -203,7 +203,13 @@ class AVoxel {
     vox.coloringFunction = hex2rgb;
     vox.updateMesh();
 
+    let isEmpty = false;
+
     vox.updateMeshPositions(function(positions) {
+      if (positions === null) {
+        isEmpty = true;
+        return;
+      }
       positions.forEach(function(p, i) {
         const ii = i % 3;
         const v = positions[i];
@@ -213,9 +219,10 @@ class AVoxel {
         else {
           positions[i] = (v - SZ/2) * scale;
         }
-
       });
     }, false);
+
+    if (isEmpty) { return vox; }
 
     vox.refreshBoundingInfo();
     vox.showBoundingBox = true; // TODO DEBUG
@@ -230,6 +237,12 @@ class AVoxel {
     let firstVox, lastVox;
     let lastAv = this;
     const id = rndId();
+
+    // TODO skip best zoom level
+    if (true) {
+      scale *= 2;
+      lastAv = lastAv.simplify();
+    }
 
     firstVox = lastAv._toBabylon(id, scene, scale);
     lastVox = firstVox;

@@ -43,6 +43,10 @@ function createScene() {
 
 
 
+  //const LOD_DISTS = [400, 800];
+  const LOD_DISTS = [];
+
+
   function voxelFromSRTM(srtmPath, pos, cb) {
     const clock = false;
 
@@ -54,7 +58,7 @@ function createScene() {
       if (clock) console.timeEnd('voxel ops');
 
       if (clock) console.time('voxel meshing');
-        const vox = av.toBabylon(scene, [400, 800]);
+        const vox = av.toBabylon(scene, LOD_DISTS);
       if (clock) console.timeEnd('voxel meshing');
 
       vox.position.x = pos[0];
@@ -91,8 +95,8 @@ function createScene() {
   let x0, y0, dx, dy;
   //x0=486; y0=626; dx=3; dy=2; // sagres
   //x0=485; y0=632; dx=3; dy=3; // lisboa
-  x0=462; y0=610; dx=3; dy=2; // funchal
-  //x0=489; y0=636; dx=3; dy=2; // serra da estrela
+  //x0=462; y0=610; dx=3; dy=2; // funchal
+  x0=488; y0=636; dx=3; dy=3; // serra da estrela
 
   let x, y;
   for (y = 0; y < dy; ++y) {
