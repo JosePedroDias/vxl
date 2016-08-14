@@ -88,10 +88,11 @@ function createScene() {
 
 
 
-  const x0 = 486;
-  const y0 = 626;
-  const dx = 3;
-  const dy = 2;
+  let x0, y0, dx, dy;
+  //x0=486; y0=626; dx=3; dy=2; // sagres
+  //x0=485; y0=632; dx=3; dy=3; // lisboa
+  x0=462; y0=610; dx=3; dy=2; // funchal
+  //x0=489; y0=636; dx=3; dy=2; // serra da estrela
 
   let x, y;
   for (y = 0; y < dy; ++y) {
