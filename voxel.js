@@ -19,6 +19,8 @@ function createScene() {
 
   const scene = new BABYLON.Scene(engine);
 
+  // scene.debugLayer.show();
+
   //const cam = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, SZ*2, -SZ*4), scene);
   const cam = new BABYLON.ArcRotateCamera('camera1', 1, 0.8, SZ*1.2, new BABYLON.Vector3(0, 0 - SZ/2, 0), scene);
   cam.setTarget(BABYLON.Vector3.Zero());
@@ -26,8 +28,8 @@ function createScene() {
 
   //const hLight = new BABYLON.HemisphericLight('hLight', new BABYLON.Vector3(0, 1, 0), scene);
   const dLight = new BABYLON.DirectionalLight('dLight', new BABYLON.Vector3(0.4, -0.8, 0.2), scene);
-  const dLight2 = new BABYLON.DirectionalLight('dLight2', new BABYLON.Vector3(-0.6, -0.7, -0.3), scene);
-  dLight2.intensity = 0.3;
+  //const dLight2 = new BABYLON.DirectionalLight('dLight2', new BABYLON.Vector3(-0.6, -0.7, -0.3), scene);
+  //dLight2.intensity = 0.3;
 
   //const sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 2, scene);
   //sphere.position.y = 1;
@@ -44,7 +46,7 @@ function createScene() {
 
 
   //const LOD_DISTS = [400, 800];
-  const LOD_DISTS = [];
+  const LOD_DISTS = []; // disables LOD
 
 
   function voxelFromSRTM(srtmPath, pos, cb) {
@@ -64,6 +66,17 @@ function createScene() {
       vox.position.x = pos[0];
       vox.position.y = pos[1];
       vox.position.z = pos[2];
+
+      let parts = srtmPath.split(/[\.\/]/);
+      const coords = [];
+      parts.pop();
+      coords.unshift( parts.pop() );
+      coords.unshift( parts.pop() );
+
+      const label = createBillboardLabel(scene, coords.join(','));
+      label.position.x = pos[0];
+      label.position.y = pos[1] + 16;
+      label.position.z = pos[2];
 
       console.warn('voxel %s ready', srtmPath);
 

@@ -22,6 +22,36 @@ function clone(o) {
 
 
 
+function createBillboardLabel(scene, text) {
+  const planeMaterial = new BABYLON.StandardMaterial('mat_' + rndId(), scene);
+  planeMaterial.backFaceCulling = false;
+  planeMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
+  //planeMaterial.ambientColor = new BABYLON.Color3(1, 1, 1);
+  //planeMaterial.alpha = 0.66;
+
+  const plane = BABYLON.Mesh.CreatePlane('plane_' + rndId(), 3, scene);
+
+  const planeTexture = new BABYLON.DynamicTexture('dynTxt_' + rndId(), 256, scene, true);
+  planeTexture.hasAlpha = true;
+
+  // text, x, y, font, color, clearColor, invertY, update
+  //planeTexture.drawText(text, null, 32, '30px helvetica', '#000', 'transparent');
+  planeTexture.drawText(text, null, 30, '30px helvetica', '#FFF', 'transparent');
+  //planeTexture.drawText(text, null, 32, '30px helvetica', 'rgba(255, 255, 255, 0.5)', 'transparent');
+
+  planeMaterial.diffuseTexture = planeTexture;
+  plane.material = planeMaterial;
+  plane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+  plane.scaling.x = 33;
+  plane.scaling.y = 33;
+  plane.scaling.z = 33;
+
+
+  return plane;
+}
+
+
+
 class AVoxel {
 
   constructor (size) {
