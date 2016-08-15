@@ -42,9 +42,10 @@ function createBillboardLabel(scene, text) {
   planeMaterial.diffuseTexture = planeTexture;
   plane.material = planeMaterial;
   plane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
-  plane.scaling.x = 33;
-  plane.scaling.y = 33;
-  plane.scaling.z = 33;
+  const s = 25;
+  plane.scaling.x = s;
+  plane.scaling.y = s;
+  plane.scaling.z = s;
 
 
   return plane;
@@ -238,6 +239,7 @@ class AVoxel {
     vox.updateMeshPositions(function(positions) {
       if (positions === null) {
         isEmpty = true;
+        console.warn('** EMPTY **');
         return;
       }
       positions.forEach(function(p, i) {
@@ -255,7 +257,7 @@ class AVoxel {
     if (isEmpty) { return vox; }
 
     vox.refreshBoundingInfo();
-    vox.showBoundingBox = true; // TODO DEBUG
+    //vox.showBoundingBox = true; // TODO DEBUG
 
     //if (vox.material) {
     //  vox.material.emissiveColor = BABYLON.Color3(0.33, 0.33, 0.33);
@@ -273,7 +275,7 @@ class AVoxel {
     const id = rndId();
 
     // TODO skip best zoom level
-    if (true) {
+    if (false) {
       scale *= 2;
       lastAv = lastAv.simplify();
     }

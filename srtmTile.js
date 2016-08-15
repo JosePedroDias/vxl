@@ -42,8 +42,27 @@ function loadSrtmTile(url, cb) {
 
     o.get = function(x, y) {
       return this.data[ this.w * y + x ];
+      //return 100;
     };
 
     cb(o);
   };
+}
+
+
+
+function loadSrtmTile4(url, cb) {
+  loadSrtmTile(url, function(o) {
+    const H = o.h/2;
+    const w2 = o.w;// / 2;
+    const h2 = o.h;// / 2;
+
+    const a = { data:o.data, w:w2, h:h2 }; a.g = o.get; a.get = function(x, y) { return this.g(x,   y);   }
+    const b = { data:o.data, w:w2, h:h2 }; b.g = o.get; b.get = function(x, y) { return this.g(x+H, y);   }
+    const c = { data:o.data, w:w2, h:h2 }; c.g = o.get; c.get = function(x, y) { return this.g(x,   y+H); }
+    const d = { data:o.data, w:w2, h:h2 }; d.g = o.get; d.get = function(x, y) { return this.g(x+H, y+H); }
+
+    cb([a, b, c, d]);
+
+  });
 }

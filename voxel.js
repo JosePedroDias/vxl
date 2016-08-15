@@ -15,7 +15,7 @@ window.addEventListener('resize', function() {
 
 
 function createScene() {
-  const SZ = 256;
+  const SZ = 128;
 
   const scene = new BABYLON.Scene(engine);
 
@@ -28,8 +28,8 @@ function createScene() {
 
   //const hLight = new BABYLON.HemisphericLight('hLight', new BABYLON.Vector3(0, 1, 0), scene);
   const dLight = new BABYLON.DirectionalLight('dLight', new BABYLON.Vector3(0.4, -0.8, 0.2), scene);
-  const dLight2 = new BABYLON.DirectionalLight('dLight2', new BABYLON.Vector3(-0.6, -0.7, -0.3), scene);
-  dLight2.intensity = 0.3;
+  //const dLight2 = new BABYLON.DirectionalLight('dLight2', new BABYLON.Vector3(-0.6, -0.7, -0.3), scene);
+  //dLight2.intensity = 0.3;
 
   //const sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 2, scene);
   //sphere.position.y = 1;
@@ -50,51 +50,51 @@ function createScene() {
 
   let totalJobs = 0;
   let finishedJobs = 0;
-  
+
   document.title = '0%';
 
   function voxelFromSRTM(srtmPath, pos, cb) {
     const clock = false;
 
-    ++totalJobs;
+    totalJobs += 4;
 
-    loadSrtmTile(srtmPath, function(srtm) { // funchal lisboa lagos
-      console.log('preparing voxel for %s...', srtmPath);
+    loadSrtmTile4(srtmPath, function(srtms) { // funchal lisboa lagos
+      srtms.forEach(function(srtm, i) {
+        if (i === 0) console.log('preparing voxel for %s...', srtmPath);
 
-      if (clock) console.time('voxel ops');
-        const av = paintSrtm(srtm);
-      if (clock) console.timeEnd('voxel ops');
+        if (clock) console.time('voxel ops');
+          const av = paintSrtm(srtm);
+        if (clock) console.timeEnd('voxel ops');
 
-      if (clock) console.time('voxel meshing');
-        const vox = av.toBabylon(scene, LOD_DISTS);
-      if (clock) console.timeEnd('voxel meshing');
+        if (clock) console.time('voxel meshing');
+          const vox = av.toBabylon(scene, LOD_DISTS);
+        if (clock) console.timeEnd('voxel meshing');
 
-      vox.position.x = pos[0];
-      vox.position.y = pos[1];
-      vox.position.z = pos[2];
+        vox.position.x = pos[0] + (i % 2 ? 0 : SZ);
+        vox.position.y = pos[1];
+        vox.position.z = pos[2] + (i < 2 ? 0 : SZ);
 
-      let parts = srtmPath.split(/[\.\/]/);
-      const coords = [];
-      parts.pop();
-      coords.unshift( parts.pop() );
-      coords.unshift( parts.pop() );
+        let parts = srtmPath.split(/[\.\/]/);
+        const coords = [];
+        parts.pop();
+        coords.unshift( parts.pop() );
+        coords.unshift( parts.pop() );
 
-      const label = createBillboardLabel(scene, coords.join(','));
-      label.position.x = pos[0];
-      label.position.y = pos[1] + 16;
-      label.position.z = pos[2];
+        const label = createBillboardLabel(scene, coords.join(','));
+        label.position.x = pos[0];
+        label.position.y = pos[1] + 16;
+        label.position.z = pos[2];
 
-      console.warn('voxel %s ready', srtmPath);
+        ++finishedJobs;
 
-      ++finishedJobs;
+        document.title = `${ ~~(finishedJobs/totalJobs * 100) }%`;
 
-      document.title = `${ ~~(finishedJobs/totalJobs * 100) }%`;
+        if (cb) {
+          cb(vox);
+        }
 
-      if (cb) {
-        cb(vox);
-      }
-
-      // scene.render(); // TODO Lazy load
+        // scene.render(); // TODO Lazy load
+      });
     });
   }
 
@@ -110,6 +110,7 @@ function createScene() {
         const v3 = Math.min(64 + v2*2, 255);
         for (z = 0; z < v; ++z) {
           av.add(SZ - 1 - x, z, y, rgb2hex(v2, v3, v2)); // TODO Weird coord mapping?
+          //av.add(SZ - 1 - x, z, y, rgb2hex(255, 0, 255)); // TODO Weird coord mapping?
         }
       }
     }
@@ -121,14 +122,17 @@ function createScene() {
   let x0, y0, dx, dy;
   //x0=486; y0=626; dx=3; dy=2; // sagres
   //x0=485; y0=632; dx=3; dy=3; // lisboa
-  x0=462; y0=610; dx=3; dy=2; // funchal
-  //x0=488; y0=636; dx=3; dy=3; // serra da estrela
+  //x0=462; y0=610; dx=3; dy=2; // funchal
+  //x0=485; y0=631; dx=1; dy=1; // lx2
+  //x0=488; y0=636; dx=3; dy=3; // serra da estrela FAILS
+  x0=488; y0=636; dx=2; dy=2; // serra da estrela1.5
+  //x0=489; y0=634; dx=2; dy=2; // serra da estrela2 FAILS
 
   let x, y;
   for (y = 0; y < dy; ++y) {
     for (x = 0; x < dx; ++x) {
       const url = `http://127.0.0.1:9999/10/${x0+x}/${y0-y}.png`;
-      const pos = [SZ*(-x+dx/2-0.5), 0, SZ*(y-dy/2+0.5)];
+      const pos = [2*SZ*(-x+dx/2-0.5), 0, 2*SZ*(y-dy/2+0.5)];
       //console.log(url, pos);
       voxelFromSRTM(url, pos);
     }

@@ -21,6 +21,10 @@ OSM vector data, bitmapped and extruded.
 * <https://github.com/TriBlade9/CEWBS>
 * <http://minddesk.com/learn/article.php?id=22>
 
+* aliased canvas drawing
+  * http://members.chello.at/easyfilter/canvas.html
+  * http://will.thimbleby.net/scanline-flood-fill/
+
 
 ```
 http://127.0.0.1:9999/10/486/625 sagres
