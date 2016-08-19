@@ -1,0 +1,47 @@
+Scan Line Algorithm:
+
+1. Read n, number of vertices of polygon.
+
+2. Read x and y coordinates of all vertices  in array x[n] and y[n]
+
+3. Find ymin and ymax.
+
+4. Store, for each edge in array edges:
+  initial x value (x1),
+  y values y1 and y2 for two end points and
+  x increment Δx from scan line to scan line
+While check y1>y2,
+  if not interchange y1 and y2 and corresponding x1 and x2 so that for each edge,
+  y1 represents its maximum y co-ordinate and y2 represents its minimum y co-ordinate.
+
+5. Sort the rows of array edges in
+  descending order of y1,
+  descending order of y2 and
+  ascending order of x2.
+
+6. Set y = ymax
+
+7. Find active edges and update active edge list:
+  if (y > y2 and y ≤ y1) {edge is active}
+  else                   {edge is not active}
+
+8. Compute the x intersects for all active edges for current y value
+  [initially x-intersect is x1 and x intersects for successive y values:
+    xi+1 <– xi + Δx
+    where Δx = -(1/m) and m= (y2-y1)/(x2-x1) = slope of a line segment.
+
+9. If x intersect is vertex i.e. x-intersect=x1 and y=y1
+then apply vertex check to test whether to consider one intersect or two intersects.
+Store all x-intersects in the x-intersect array.
+
+10. Sort x-intersect array in ascending order.
+
+11. Extract pairs of intersects from the sorted x-intersect array.
+
+12. Pass pairs of x values to line drawing routines to draw corresponding line segments.
+
+13. Set y = y-1
+
+14. Repeat Steps 7 to 13 until y ≥ ymin.
+
+15. Stop.

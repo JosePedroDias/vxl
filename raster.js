@@ -194,6 +194,49 @@ function plotLines(lines, c, isClosed) {
 }
 
 
+// scanline aux funcs
+
+function sign(n) {
+  return ((n < 0) ? -1 : ((n > 0) ? 1 : 0));
+}
+
+function sortSegs(segments) {
+  segments.sort(function(a, b) { return sign(a.x1-b.x1); }); // 3rd criteria, asc x1
+  segments.sort(function(a, b) { return sign(b.y1-a.y1); }); // 2nd criteria, desc y1
+  segments.sort(function(a, b) { return sign(b.y0-a.y0); }); // 1st criteria, desc y0
+  //return segments;
+}
+
+function electSegs(segments, y) {
+  return segments.filter(function(s) {
+    //console.log('y', y, 'y0', s.y0, 'y1', s.y1, '?', (y >= s.y0 && y < s.y1));
+    return (y >= s.y0 && y < s.y1);
+  });
+}
+
+function segIntersection(s, y) { // s -> x0,x1, y0,y1, dx
+  let xi, yi;
+  if (xi in s) {
+    yi = s.yi;
+    xi = s.xi;
+  }
+  else {
+    yi = s.y1;
+    xi = s.x1;
+  }
+
+  while (y !== yi) {
+    --yi;
+    xi -= s.dx;
+  }
+
+  s.xi = xi;
+  s.yi = yi;
+
+  return Math.floor(xi);
+}
+
+
 function scanlinePolygonFill(poly, c) {
   poly.forEach(function(p, i) { p.push(String.fromCharCode(65+i)) });
 
@@ -201,33 +244,29 @@ function scanlinePolygonFill(poly, c) {
   const n = poly.length;
 
   // 2
-  const x = poly.map(p => p[0]);
-  const y = poly.map(p => p[1]);
+  //const xx = poly.map(p => p[0]);
+  const yy = poly.map(p => p[1]);
 
   // 3
-  const ym = Math.min.apply(null, y);
-  const yM = Math.max.apply(null, y);
+  const ym = Math.min.apply(null, yy);
+  const yM = Math.max.apply(null, yy);
 
   //4
   const segments = [];
   for (let i = 0; i < n; ++i) {
     const a = poly[i === 0 ? n-1 : i-1];
     const b = poly[i];
-    //console.log('%s %s', i === 0 ? n-1 : i-1, i);
     let y0, y1, x0, x1, lbl;
     if (a[1] < b[1]) {
-      lbl = [ a[2] , b[2] ].join(' -> ');
       y0 = a[1]; y1 = b[1];
       x0 = a[0]; x1 = b[0];
     }
     else {
-      lbl = [ b[2] , a[2] ].join(' -> ');
       y0 = b[1]; y1 = a[1];
       x0 = b[0]; x1 = a[0];
     }
     const m = (y0 - y1) / (x0 - x1);
     segments.push({
-      lbl: lbl,
       y0: y0,
       y1: y1,
       x0: x0,
@@ -236,47 +275,26 @@ function scanlinePolygonFill(poly, c) {
     });
   }
 
-  function sign(n) { return ((n < 0) ? -1 : ((n > 0) ? 1 : 0)); }
-
   // 5
-  function sortSegs() {
-    segments.sort(function(a, b) { return sign(a.x1-b.x1); }); // 3rd criteria, asc x1
-    //segments.sort(function(a, b) { return sign(b.y1-a.y1); }); // 2nd criteria, desc y1
-    //segments.sort(function(a, b) { return sign(b.y0-a.y0); }); // 1st criteria, desc y0
-  }
-  sortSegs();
+  /*segments = */sortSegs(segments);
 
-  console.log('poly:');
-  poly.forEach(function(p) {
-    console.log('  %s: %s, %s', p[2], p[0], p[1]);
-  });
+  let y;
+  for (y = yM; y >= ym; --y) { // 6
+    let ael = electSegs(segments, y); // 7
 
-  //console.log('x', x);
-  //console.log('y', y);
-  console.log('ym:%s yM:%s', ym, yM);
-  console.log('segments\n' + JSON.stringify(segments, null, '  '));
+    let inter = ael.map(function(s) { return segIntersection(s, y); });
+    inter = inter.sort( function(a, b) { return sign(a - b); });
 
-  let xPrev = -1;
-
-  // 6
-  return;
-  for (let y = yM; y >= ym; --y) {
-    segments.forEach(function(seg) {
-      //if (seg.y0 < y || seg.y1 > y) { return; } // TODO
-
-      if (xPrev === -1) {
-        xPrev = seg.x0;
+    const n = inter.length;
+    for (let i = 0; i < n/2; ++i) {
+      const x0 = inter[i*2];
+      const x1 = inter[i*2+1];
+      for (let x = x0; x <= x1; ++x) {
+        setPixel(x, y, c);
       }
-      else {
-        for (let x = xPrev; x <= seg.x0; ++x) {
-          //console.log('[%s,%s]', xPrev, x);
-          setPixel(x, y, c);
-        }
-        xPrev = -1;
-      }
+    }
 
-      setPixel(seg.x0, y, c);
-    });
+    //sortSegs(segments);
   }
 }
 
