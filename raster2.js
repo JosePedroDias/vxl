@@ -57,7 +57,22 @@
       return h;
     }
 
-    const api = window.getRaster(setPixel);
+    const setPixel2 = function(x, y, c) {
+      const pixels = [
+        [-1,-3], [0,-3], [1,-3],
+        [-2,-2], [-1,-2], [0,-2], [1,-2], [2,-2],
+        [-3,-1], [-2,-1], [-1,-1], [0,-1], [1,-1], [2,-1], [3,-1],
+        [-3,0], [-2,0], [-1,0], [0,0], [1,0], [2,0], [3,0],
+        [-3,1], [-2,1], [-1,1], [0,1], [1,1], [2,1], [3,1],
+        [-2,2], [-1,2], [0,2], [1,2], [2,2],
+        [-1,3], [0,3], [1,3]
+      ];
+      pixels.forEach(function(p) {
+        setPixel(x+p[0], y+p[1], c);
+      });
+    }
+
+    const api = window.getRaster(setPixel2);
 
     api.getPixel = getPixel;
     api.setPixel = setPixel;
