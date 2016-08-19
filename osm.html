@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <title>osm</title>
+
+    <style media="screen">
+      img, canvas {
+        border: 1px solid #AAA;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="geo.js"></script>
+    <script src="raster.js"></script>
+    <script src="raster2.js"></script>
+    <script src="osm.js"></script>
+
+    <!--img src="http://b.tile.openstreetmap.org/17/62206/50217.png"-->
+    <img src="17_62206_50217.png"><br/>
+    <canvas width="256" height="256">
+
+    <script>
+      'use strict';
+
+      /*
+what does this do?
+* fetches roads from OSM via overpass API
+* computes map tile from bounds (for comparison)
+* draws fetched ways in a canvas
+
+mapping explanation:
+http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/
+
+http://wiki.openstreetmap.org/wiki/Highways
+http://wiki.openstreetmap.org/wiki/Key:highway
+http://wiki.openstreetmap.org/wiki/Tag:highway%3Dmotorway
+
+also interesting:
+https://openstreetmap.us/~migurski/vector-datasource/
+      */
+
+      const tileDim = 256;
+      const zoom = 17;
+      const bound0 = {lat:38.732661120482334, lon:-9.1461181640625};
+      const bound1 = {lat:38.73480362521081,  lon:-9.14337158203125};
+
+      const bounds = [ // lat lon
+        bound0.lat, bound0.lon,
+        bound1.lat, bound1.lon
+      ];
+
+      const origin = geo.project(bound0, zoom);
+
+      const pr = function(loc) {
+        var pos = geo.project(loc, zoom);
+        return [
+          ~~(           pos.x - origin.x  ),
+          ~~(tileDim - (pos.y - origin.y) )
+        ];
+      };
+
+      osm.fetchRoads(bounds, function(err, o1) {
+        if (err) { return console.error(err); }
+
+        osm.fetchBuildings(bounds, function(err, o2) {
+          if (err) { return console.error(err); }
+
+          const canvasEl = document.getElementsByTagName('canvas')[0];
+          const c = getRasterCanvas(canvasEl);
+
+          osm.drawRoads(o1, c, pr);
+          osm.drawBuildings(o2, c, pr);
+
+          c.bake();
+        });
+      });
+    </script>
+  </body>
+</html>
