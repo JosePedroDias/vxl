@@ -1,0 +1,30 @@
+lisbon, saldanha
+
+  min lon/lat: -9.1461181640625  38.732661120482334
+  max lon/lat: -9.14337158203125 38.73480362521081
+  google: 62206, 50217
+  http://www.openstreetmap.org/#map=17/38.73350/-9.14410&layers=C
+
+
+lisbon, torres de lisboa
+
+  min lon/lat: -9.17633056640625 38.756225137839074
+  max lon/lat: -9.173583984375   38.758366935612784
+  google: 62195,50206
+  http://www.openstreetmap.org/#map=17/38.75715/-9.17487&layers=C
+
+
+fundão, centro
+
+  min lon/lat: -7.50091552734375 40.13899044275822
+  max lon/lat: -7.4981689453125  40.14109012528465
+  google: 62805,81517
+  http://www.openstreetmap.org/#map=17/40.13882/-7.49972&layers=C
+
+
+lagos, marina
+
+  min lon/lat: -8.6737060546875 37.10995544464346
+  max lon/lat: -8.67095947265625 37.112145754751516
+  google: 62378,50966
+  http://www.openstreetmap.org/relation/6430248#map=17/37.10976/-8.67223&layers=C

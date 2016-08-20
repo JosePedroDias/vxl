@@ -41,35 +41,31 @@
       let wi, clr;
       const hw = el.tags.highway;
 
+      console.log(hw);
+
       if (hw === 'primary') {
-        wi = 8;
-        clr = '#DD0';
+        wi = 10; clr = 0x444444FF;
       }
       else if (hw === 'secondary' || hw === 'primary_link') {
-        wi = 7;
-        clr = '#EE0';
+        wi = 8; clr = 0x444444FF;
       }
       else if (hw === 'tertiary') {
-        wi = 7;
-        clr = '#F00';
+        wi = 8; clr = 0x444444FF;
       }
       else if (hw === 'residential') {
-        wi = 5;
-        clr = '#700';
+        wi = 6; clr = 0x444444FF;
       }
       else if (hw === 'service') {
-        wi = 3;
-        clr = 'orange';
+        wi = 4; clr = 0x444444FF;
       }
       else if (hw === 'cycleway') {
-        wi = 3;
-        clr = 'orange';
+        wi = 2; clr = 0x662222FF;
       }
-      else if (hw === 'footway' || hw === 'steps' || hw === 'pedestrian') {
-        clr = 'gray';
-      }
+      /*else if (hw === 'footway' || hw === 'steps' || hw === 'pedestrian') {
+        wi = 1; clr = 0x444444FF;
+      }*/
       else {
-        console.log(hw);
+        return;// console.warn(hw);
       }
 
       //c.setLineDash(dashed ? [5, 5] : [0, 0] );
@@ -78,7 +74,8 @@
 
       const poly = el.geometry.map(pr);
 
-      c.drawLines(poly, 0x000000FF);
+      c.setStroke(wi);
+      c.drawLines(poly, clr);
     });
   }
 
@@ -90,6 +87,7 @@
       const poly = el.geometry.map(pr);
 
       c.fillPoly(poly, 0x888888FF);
+      c.setStroke(1);
       c.drawLines(poly, 0x444444FF, true);
     });
   }
