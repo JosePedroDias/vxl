@@ -6,6 +6,8 @@
   const roadsQuery = 'way["highway"~"."]({{BOUNDS}});out geom;';
   const buildingsQuery = 'way["building"]({{BOUNDS}});out geom;';
 
+  // TODO: ADDITIONAL QUERIES: water, parks
+
 
   function ajax(url, cb) {
     const xhr = new XMLHttpRequest();
@@ -40,8 +42,6 @@
 
       let wi, clr;
       const hw = el.tags.highway;
-
-      console.log(hw);
 
       if (hw === 'primary') {
         wi = 10; clr = 0x444444FF;

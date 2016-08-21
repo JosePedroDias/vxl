@@ -110,8 +110,8 @@
   function fromTileIndicesGoogle(loc, zoom) {
     const t = powersOf2[zoom];
     return {
-      lat: loc.x / t * 360 - 180,
-      lon: Math.atan( Math.sinh(π * (1 - 2 * loc.y / t) ) ) * RAD2DEG
+      lon: loc.x / t * 360 - 180,
+      lat: Math.atan( Math.sinh(π * (1 - 2 * loc.y / t) ) ) * RAD2DEG
     };
   }
 

@@ -44,14 +44,18 @@ https://openstreetmap.us/~migurski/vector-datasource/
 
       const tileDim = 256;
       const zoom = 17;
-      const bound0 = {lat:38.732661120482334, lon:-9.1461181640625};
-      const bound1 = {lat:38.73480362521081,  lon:-9.14337158203125};
+      const tile = {x:62206, y:50217+1};
+
+      const bds = geo.tileBoundsGoogle(tile, zoom);
+      const bound0 = bds.min;
+      const bound1 = bds.max;
 
       const bounds = [ // lat lon
-        bound0.lat, bound0.lon,
-        bound1.lat, bound1.lon
+        bds.min.lat, bds.min.lon,
+        bds.max.lat, bds.max.lon
       ];
 
+      //const origin = geo.project(bds.min, zoom);
       const origin = geo.project(bound0, zoom);
 
       const pr = function(loc) {
@@ -59,6 +63,7 @@ https://openstreetmap.us/~migurski/vector-datasource/
         return [
           ~~(           pos.x - origin.x  ),
           ~~(tileDim - (pos.y - origin.y) )
+          //~~(           pos.y - origin.y  )
         ];
       };
 
